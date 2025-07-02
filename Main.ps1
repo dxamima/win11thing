@@ -1,7 +1,7 @@
-# Voicemod Uninstaller Script for Windows 11
+# Damima Uninstaller Script for Windows 11
 # Run this PowerShell script as Administrator
 
-Write-Host "Voicemod Uninstaller Script" -ForegroundColor Green
+Write-Host "Damima Uninstaller Script" -ForegroundColor Green
 Write-Host "==============================" -ForegroundColor Green
 
 # Check if running as administrator
@@ -13,10 +13,10 @@ if (-not $isAdmin) {
     exit
 }
 
-# Function to stop Voicemod processes
-function Stop-VoicemodProcesses {
-    Write-Host "Stopping processes..." -ForegroundColor Yellow
-    $processes = @("voicemod", "voicemeeter", "VoicemodDesktop")
+# Function to stop Damima processes
+function Stop-DamimaProcesses {
+    Write-Host "Stopping Damima processes..." -ForegroundColor Yellow
+    $processes = @("voicemod", "voicemeeter", "VoicemodDesktop", "Voicemod Desktop")
     
     foreach ($process in $processes) {
         try {
@@ -30,24 +30,33 @@ function Stop-VoicemodProcesses {
 }
 
 # Function to uninstall via Windows Apps
-function Uninstall-VoicemodApp {
-    Write-Host "Attempting to uninstall Voicemod..." -ForegroundColor Yellow
+function Uninstall-DamimaApp {
+    Write-Host "Attempting to uninstall Damima..." -ForegroundColor Yellow
     
-    # Try to find and uninstall via Get-WmiObject
-    $voicemodApp = Get-WmiObject -Class Win32_Product | Where-Object { $_.Name -like "*Voicemod*" }
-    
-    if ($voicemodApp) {
-        Write-Host "Found Voicemod installation. Uninstalling..." -ForegroundColor Green
-        $voicemodApp.Uninstall()
-        Write-Host "Voicemod has been uninstalled." -ForegroundColor Green
+    # Try the built-in uninstaller first
+    $uninstallerPath = "$env:ProgramFiles\Voicemod Desktop\unins000.exe"
+    if (Test-Path $uninstallerPath) {
+        Write-Host "Found Damima uninstaller. Running..." -ForegroundColor Green
+        Start-Process -FilePath $uninstallerPath -ArgumentList "/SILENT" -Wait
+        Write-Host "Damima uninstaller completed." -ForegroundColor Green
     }
     else {
-        Write-Host "Voicemod not found in installed programs." -ForegroundColor Yellow
+        # Try to find and uninstall via Get-WmiObject
+        $damimaApp = Get-WmiObject -Class Win32_Product | Where-Object { $_.Name -like "*Voicemod*" }
+        
+        if ($damimaApp) {
+            Write-Host "Found Damima installation. Uninstalling..." -ForegroundColor Green
+            $damimaApp.Uninstall()
+            Write-Host "Damima has been uninstalled." -ForegroundColor Green
+        }
+        else {
+            Write-Host "Damima not found in installed programs." -ForegroundColor Yellow
+        }
     }
 }
 
 # Function to remove leftover files and folders
-function Remove-VoicemodFiles {
+function Remove-DamimaFiles {
     Write-Host "Removing leftover files and folders..." -ForegroundColor Yellow
     
     $paths = @(
@@ -55,6 +64,8 @@ function Remove-VoicemodFiles {
         "$env:ProgramFiles(x86)\Voicemod Desktop",
         "$env:LOCALAPPDATA\Voicemod",
         "$env:APPDATA\Voicemod",
+        "$env:USERPROFILE\AppData\Local\Voicemod",
+        "$env:USERPROFILE\AppData\Roaming\Voicemod",
         "$env:USERPROFILE\Documents\Voicemod"
     )
     
@@ -75,7 +86,7 @@ function Remove-VoicemodFiles {
 }
 
 # Function to clean registry entries
-function Clean-VoicemodRegistry {
+function Clean-DamimaRegistry {
     Write-Host "Cleaning registry entries..." -ForegroundColor Yellow
     
     $registryPaths = @(
@@ -102,18 +113,18 @@ function Clean-VoicemodRegistry {
 
 # Main execution
 try {
-    Stop-VoicemodProcesses
+    Stop-DamimaProcesses
     Start-Sleep -Seconds 2
     
-    Uninstall-VoicemodApp
+    Uninstall-DamimaApp
     Start-Sleep -Seconds 2
     
-    Remove-VoicemodFiles
+    Remove-DamimaFiles
     Start-Sleep -Seconds 1
     
-    Clean-VoicemodRegistry
+    Clean-DamimaRegistry
     
-    Write-Host "`Done!" -ForegroundColor Green
+    Write-Host "`nDamima removal completed!" -ForegroundColor Green
     Write-Host "Please restart your computer to complete the removal process." -ForegroundColor Yellow
 }
 catch {
