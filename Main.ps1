@@ -15,7 +15,7 @@ if (-not $isAdmin) {
 
 # Function to stop Voicemod processes
 function Stop-VoicemodProcesses {
-    Write-Host "Stopping Voicemod processes..." -ForegroundColor Yellow
+    Write-Host "Stopping processes..." -ForegroundColor Yellow
     $processes = @("voicemod", "voicemeeter", "VoicemodDesktop")
     
     foreach ($process in $processes) {
@@ -113,7 +113,7 @@ try {
     
     Clean-VoicemodRegistry
     
-    Write-Host "`nVoicemod removal completed!" -ForegroundColor Green
+    Write-Host "`Done!" -ForegroundColor Green
     Write-Host "Please restart your computer to complete the removal process." -ForegroundColor Yellow
 }
 catch {
